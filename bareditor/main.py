@@ -6,7 +6,7 @@ from tools import tools
 class MainFrame(wx.Frame):
 
     def __init__(self, *args, **kwargs):
-        wx.Frame.__init__(self, *args, **kwargs)
+        wx.Frame.__init__(self, None, title='Barcode Editor', **kwargs)
         self.CreateStatusBar()
         self.toolbar = wx.ToolBar( self, wx.ID_ANY) 
         self.doc = None
@@ -33,6 +33,7 @@ class MainFrame(wx.Frame):
         
     def BindEvents(self):
         self.canvas.Bind(FloatCanvas.EVT_LEFT_DOWN, self.OnLeftDown)
+        self.canvas.Bind(FloatCanvas.EVT_LEFT_DCLICK, self.OnLeftDClick)
         self.canvas.Bind(FloatCanvas.EVT_MOTION, self.OnMove)
         self.canvas.Bind(FloatCanvas.EVT_LEFT_UP, self.OnLeftUp)
         self.canvas.Bind(FloatCanvas.EVT_RIGHT_UP, self.OnRightDown)
@@ -41,6 +42,11 @@ class MainFrame(wx.Frame):
         self.moving = False
 
     def OnRightDown(self, event):
+        cur = self.doc.pick(*(event.Coords))
+        if not cur is None:self.doc.remove(cur)
+        self.update()
+
+    def OnLeftDClick(self, event):
         cur = self.doc.pick(*(event.Coords))
         if not cur is None:cur.show(self)
 
@@ -87,10 +93,6 @@ class MainFrame(wx.Frame):
         
 
     def OnMove(self, event):
-        """
-        Updates the status bar with the world coordinates
-
-        """
         self.SetStatusText("%i, %i"%tuple(event.Coords))
         if not self.moving:return
         if self.doc.cur is None:return

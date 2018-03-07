@@ -3,7 +3,7 @@ from PIL import Image, ImageFont, ImageDraw
 class Doc:
 	def __init__(self, para=None):
 		self.rects = []
-		if para is None: para = {'w':256, 'h':256}
+		if para is None: para = {'w':300, 'h':512}
 		self.para =  para
 		self.cur = None
 
@@ -18,12 +18,13 @@ class Doc:
 		if self.cur is obj: self.cur = None
 		del self.rects[self.rects.index(obj)]
 
-	def img(self):
+	def img(self, thre = False):
 		size = (self.para['w'], self.para['h'])
 		image = Image.new("RGB", size, "white")
 		for i in self.rects:
 			i.draw(image, i.para)
 		draw = ImageDraw.Draw(image)
+		if thre: image = image.point(lambda p: p > 128 and 255)
 		return image
 
 	def pick(self, x, y):

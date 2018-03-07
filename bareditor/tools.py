@@ -30,7 +30,7 @@ class Tool:
 			self.show(parent, doc)
 
 class NewTool(Tool):
-	para = {'w':256, 'h':256}
+	para = {'w':300, 'h':512}
 	view = [(int, (100,1000), 0, 'width', 'w', 'pix'),
 			(int, (100,1000), 0, 'height', 'h', 'pix')]
 	img = '../imgdata/new.png'
@@ -50,10 +50,9 @@ class SaveTool(Tool):
 	def run(self, parent, doc, para):
 		dlg = wx.FileDialog(
 			parent, message="Choose a file",
-			defaultDir=os.getcwd(),
 			defaultFile="",
 			wildcard='Bar File (*.bar)|*.bar',
-			style=wx.FD_SAVE | wx.FD_CHANGE_DIR | wx.FD_PREVIEW
+			style=wx.FD_SAVE | wx.FD_PREVIEW
 			)
 
 		if dlg.ShowModal() == wx.ID_OK:
@@ -70,10 +69,9 @@ class OpenTool(Tool):
 	def run(self, parent, doc, para):
 		dlg = wx.FileDialog(
 			parent, message="Choose a file",
-			defaultDir=os.getcwd(),
 			defaultFile="",
 			wildcard='Bar File (*.bar)|*.bar',
-			style=wx.FD_OPEN | wx.FD_CHANGE_DIR | 
+			style=wx.FD_OPEN | 
 				wx.FD_FILE_MUST_EXIST | wx.FD_PREVIEW
 			)
 
@@ -134,4 +132,28 @@ class FullExtent(Tool):
 		parent.canvas.BoundingBoxDirty = True
 		parent.canvas.ZoomToBB()
 	
-tools = [NewTool, SaveTool, OpenTool, SetTool, AddText, AddBar, ZoomIn, ZoomOut, FullExtent]
+class SaveImg(Tool):
+	img = '../imgdata/picture.png'
+	title = 'Save Image'
+
+	def run(self, parent, doc, para):
+		dlg = wx.FileDialog(
+			parent, message="Choose a file",
+			defaultFile="",
+			wildcard='PNG File (*.png)|*.png',
+			style=wx.FD_SAVE | wx.FD_PREVIEW
+			)
+
+		if dlg.ShowModal() == wx.ID_OK:
+			# This returns a Python list of files that were selected.
+			doc.img(True).save(dlg.GetPath(), 'png')
+		dlg.Destroy()
+
+class Printer(Tool):
+	img = '../imgdata/printer.png'
+	title = 'Full Extent'
+
+	def run(self, parent, doc, para):
+		print('No Printer')
+
+tools = [NewTool, SaveTool, OpenTool, SetTool, AddText, AddBar, ZoomIn, ZoomOut, FullExtent, SaveImg, Printer]
