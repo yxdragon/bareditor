@@ -1,9 +1,10 @@
 from PIL import Image, ImageFont, ImageDraw
 
 class Doc:
-	def __init__(self):
+	def __init__(self, para=None):
 		self.rects = []
-		self.para = {'w':256, 'h':100}
+		if para is None: para = {'w':256, 'h':256}
+		self.para =  para
 		self.cur = None
 
 	def save(self):pass
@@ -24,9 +25,6 @@ class Doc:
 		for i in self.rects:
 			i.draw(image, i.para)
 		draw = ImageDraw.Draw(image)
-
-		#truetype=ImageFont.truetype('C:/Windows/Fonts/Microsoft YaHei UI/msyh.ttc', 36)
-		#draw.text((10, 0), 'ABCD', (0,0,0), font=truetype)
 		return image
 
 	def pick(self, x, y):
@@ -38,7 +36,28 @@ class Doc:
 			return self.cur
 		self.cur = None
 
+	def __str__(self):
+		ls = []
+		ls.append(str(self.para))
+		for i in self.rects:
+			ls.append(str(i))
+		return '\n'.join(ls)
+
+def parsedoc(cont):
+	print('adfaf')
+	from rects import parserect
+	lines = cont.split('\n')
+	doc = Doc(eval(lines[0]))
+	for i in lines[1:]:
+		if '>' in i: doc.add(parserect(i))
+	return doc
 
 if __name__ == '__main__':
 	doc = Doc()
-	doc.img().show()
+	from rects import *
+	doc.add(TextObj())
+	ss = str(doc)
+	print(ss)
+	print('========')
+	doc = parsedoc(ss)
+	print(doc)

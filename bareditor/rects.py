@@ -24,10 +24,12 @@ class Rect:
 
 class TextObj(Rect):
 	title = 'Text'
-	def __init__(self):
-		self.para = {'x':0, 'y':0, 'txt':'TEXT', 'size':36, 
+	def __init__(self, para=None):
+		if para is None: para = {'x':0, 'y':0, 'txt':'TEXT', 'size':36, 
 			'font':'C:/Windows/Fonts/Microsoft YaHei UI/msyh.ttc'}
-		self.view = [(int, (1,1024), 0, 'X', 'x', 'pix'),
+		self.para = para
+		self.view = [(str, 'text', 'txt', ''),
+					 (int, (1,1024), 0, 'X', 'x', 'pix'),
 					 (int, (1,1024), 0, 'Y', 'y', 'pix'),
 					 (int, (1,200), 0, 'size', 'size', '')]
 
@@ -44,6 +46,15 @@ class TextObj(Rect):
 		truetype=ImageFont.truetype(self.para['font'], self.para['size'])
 		draw.text((para['x'], para['y']), para['txt'], (0,0,0), font=truetype)
 		del draw
+
+	def __str__(self):
+		return 'TXT>'+str(self.para)
+
+def parserect(cont):
+	title, para = cont.split('>')
+	if title == 'TXT':
+		return TextObj(eval(para))
+
 
 if __name__ == '__main__':
 	txt = TextObj()

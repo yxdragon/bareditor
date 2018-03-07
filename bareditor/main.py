@@ -1,6 +1,6 @@
 import wx
 from doc import Doc
-from wx.lib.floatcanvas import NavCanvas, FloatCanvas
+from wx.lib.floatcanvas import NavCanvas, FloatCanvas, GUIMode
 from tools import tools
 
 class MainFrame(wx.Frame):
@@ -29,8 +29,6 @@ class MainFrame(wx.Frame):
         self.SetSizerAndFit( bSizer1 )
         self.Layout()
         self.Show()
-        canvas.ZoomToBB()
-        self.update()
         self.moving = False
         
     def BindEvents(self):
@@ -54,21 +52,29 @@ class MainFrame(wx.Frame):
         self.dp = cur.getpos() - event.Coords*(1,-1)
         self.moving = True
         
+    def SetMode(self, pan='switch'):
+        if pan=='switch':
+            pan = isinstance(self.canvas.GUIMode, GUIMode.GUIMouse)
+        mode = (GUIMode.GUIMouse, GUIMode.GUIMove)[pan]()
+        self.canvas.SetMode(mode)
 
     def update(self):
         if self.doc is None: return
-        self.canvas.ClearAll()
+        self.canvas.ClearAll(ResetBB=False)
         image = self.doc.img()
         width, height = image.size
         bmp = wx.Bitmap.FromBuffer(width, height, image.tobytes())
         img = FloatCanvas.ScaledBitmap( bmp, (0,0), Height=height, Position = 'tl')
         self.canvas.AddObject(img)
+
         
         if not self.doc.cur is None:
             rect = self.doc.cur.rect()
             self.canvas.AddRectangle(*(rect), LineColor='Blue', LineStyle='DotDash')
-
-        self.canvas.Zoom(1, (width/2, -height//2))
+        self.canvas.BoundingBoxDirty = False
+        self.canvas.Draw()
+        #self.canvas.SetToNewScale(DrawFlag=True)
+        #self.canvas.Zoom(1, (width/2, -height//2))
 
 
 

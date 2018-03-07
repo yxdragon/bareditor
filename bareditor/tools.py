@@ -1,7 +1,7 @@
 from config import ParaDialog
-from doc import Doc
+from doc import Doc, parsedoc
 from rects import *
-import wx
+import wx, os
 
 class Tool:
 	title = 'title'
@@ -33,29 +33,71 @@ class NewTool(Tool):
 	para = {'w':256, 'h':256}
 	view = [(int, (100,1000), 0, 'width', 'w', 'pix'),
 			(int, (100,1000), 0, 'height', 'h', 'pix')]
-	img = 'imgdata/new.png'
+	img = '../imgdata/new.png'
 	title = 'New'
 
 	def run(self, parent, doc, para):
 		parent.doc = Doc()
 		parent.doc.para = {'w':para['w'], 'h':para['h']}
+		parent.canvas.Zoom(1/parent.canvas.Scale, 
+			(para['w']//2, -para['h']//2))
+		#parent.canvas.SetFocus()
+
+class SaveTool(Tool):
+	img = '../imgdata/save.png'
+	title = 'Save'
+
+	def run(self, parent, doc, para):
+		dlg = wx.FileDialog(
+			parent, message="Choose a file",
+			defaultDir=os.getcwd(),
+			defaultFile="",
+			wildcard='Bar File (*.bar)|*.bar',
+			style=wx.FD_SAVE | wx.FD_CHANGE_DIR | wx.FD_PREVIEW
+			)
+
+		if dlg.ShowModal() == wx.ID_OK:
+			# This returns a Python list of files that were selected.
+			f = open(dlg.GetPath(), 'w')
+			f.write(str(doc))
+			f.close()
+		dlg.Destroy()
 
 class OpenTool(Tool):
-	img = 'imgdata/open.png'
+	img = '../imgdata/open.png'
 	title = 'Open'
-	def run(self, parent, doc, para):pass
+
+	def run(self, parent, doc, para):
+		dlg = wx.FileDialog(
+			parent, message="Choose a file",
+			defaultDir=os.getcwd(),
+			defaultFile="",
+			wildcard='Bar File (*.bar)|*.bar',
+			style=wx.FD_OPEN | wx.FD_CHANGE_DIR | 
+				wx.FD_FILE_MUST_EXIST | wx.FD_PREVIEW
+			)
+
+		if dlg.ShowModal() == wx.ID_OK:
+			# This returns a Python list of files that were selected.
+			f = open(dlg.GetPath())
+			cont = '\n'.join(f.readlines())
+			parent.doc = parsedoc(cont)
+			center = parent.doc.para['w']//2, -parent.doc.para['h']//2
+			parent.canvas.Zoom(1/parent.canvas.Scale, center)
+			f.close()
+		dlg.Destroy()
 
 class SetTool(Tool):
 	para = {'w':256, 'h':256}
 	view = [(int, (100,1000), 0, 'width', 'w', 'pix'),
 			(int, (100,1000), 0, 'height', 'h', 'pix')]
-	img = 'imgdata/set.png'
+	img = '../imgdata/set.png'
 	title = 'Set'
 	def run(self, parent, doc, para):
 		doc.para = {'w':para['w'], 'h':para['h']}
 
 class AddText(Tool):
-	img = 'imgdata/text.png'
+	img = '../imgdata/text.png'
 	title = 'Text'
 
 	def run(self, parent, doc, para):
@@ -63,11 +105,27 @@ class AddText(Tool):
 		print('ddd')
 
 class ZoomIn(Tool):
-	img = 'imgdata/zoomin.png'
-	title = 'ZoomIn'
+	img = '../imgdata/zoomin.png'
+	title = 'Zoom In'
+
+	def run(self, parent, doc, para):
+		parent.canvas.Zoom(1/parent.canvas.Scale, 
+			(doc.para['w']//2, -doc.para['h']//2))
+		
 
 class ZoomOut(Tool):
-	img = 'imgdata/zoomout.png'
-	title = 'ZoomOut'
+	img = '../imgdata/zoomout.png'
+	title = 'Zoom Out'
+
+	def run(self, parent, doc, para):
+		parent.SetMode()
+
+class FullExtent(Tool):
+	img = '../imgdata/full.png'
+	title = 'Full Extent'
+
+	def run(self, parent, doc, para):
+		parent.canvas.BoundingBoxDirty = True
+		parent.canvas.ZoomToBB()
 	
-tools = [NewTool, OpenTool, SetTool, AddText, ZoomIn, ZoomOut]
+tools = [NewTool, SaveTool, OpenTool, SetTool, AddText, ZoomIn, ZoomOut, FullExtent]
