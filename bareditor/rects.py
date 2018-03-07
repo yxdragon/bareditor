@@ -1,6 +1,6 @@
 from PIL import Image, ImageFont, ImageDraw
 from config import ParaDialog
-
+import os
 bufferimg = Image.new("RGB", (1,1), "white")
 
 class Rect:
@@ -25,14 +25,18 @@ class Rect:
 class TextObj(Rect):
 	title = 'Text'
 	def __init__(self, para=None):
+		files = os.listdir('../font')
+		fontlist=[]
+		for i in files: fontlist.append(i)
 		if para is None: para = {'x':0, 'y':0, 'txt':'TEXT', 'size':36, 
-			'font':'C:/Windows/Fonts/Microsoft YaHei UI/msyh.ttc'}
+			'font':fontlist[0]}
 		self.para = para
 		self.view = [(str, 'text', 'txt', ''),
 					 (int, (1,1024), 0, 'X', 'x', 'pix'),
 					 (int, (1,1024), 0, 'Y', 'y', 'pix'),
-					 (int, (1,200), 0, 'size', 'size', '')]
-
+					 (int, (1,200), 0, 'size', 'size', ''),
+					 (list, fontlist, str, 'font', 'font', '')
+					 ]
 	def rect(self):
 		p = self.para
 		truetype=ImageFont.truetype(p['font'], p['size'])
