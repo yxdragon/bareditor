@@ -20,7 +20,7 @@ class MainFrame(wx.Frame):
         # Add the Canvas
         self.canvas = canvas = FloatCanvas.FloatCanvas(
             self, size = (500,500), BackgroundColor = "LIGHT GRAY")
-        canvas.MaxScale=2 # sets the maximum zoom level
+        canvas.MaxScale=3 # sets the maximum zoom level
         self.BindEvents()
 
         bSizer1 = wx.BoxSizer( wx.VERTICAL )

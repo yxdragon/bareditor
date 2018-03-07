@@ -9,10 +9,9 @@ class Doc:
 
 	def save(self):pass
 
-	def add(self, obj, pos=None):
-		if pos is None: pos = (
-			self.para['w']//2, self.para['h']//2)
-		obj.setpos(*pos)
+	def add(self, obj, center=True):
+		if center: 
+			obj.setpos(self.para['w']//2, self.para['h']//2)
 		self.rects.append(obj)
 
 	def remove(self, obj):
@@ -44,12 +43,11 @@ class Doc:
 		return '\n'.join(ls)
 
 def parsedoc(cont):
-	print('adfaf')
 	from rects import parserect
 	lines = cont.split('\n')
 	doc = Doc(eval(lines[0]))
 	for i in lines[1:]:
-		if '>' in i: doc.add(parserect(i))
+		if '>' in i: doc.add(parserect(i), False)
 	return doc
 
 if __name__ == '__main__':

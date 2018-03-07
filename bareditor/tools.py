@@ -102,7 +102,13 @@ class AddText(Tool):
 
 	def run(self, parent, doc, para):
 		doc.add(TextObj())
-		print('ddd')
+
+class AddBar(Tool):
+	img = '../imgdata/barcode.png'
+	title = 'Barcode'
+
+	def run(self, parent, doc, para):
+		doc.add(BarObj())
 
 class ZoomIn(Tool):
 	img = '../imgdata/zoomin.png'
@@ -128,4 +134,4 @@ class FullExtent(Tool):
 		parent.canvas.BoundingBoxDirty = True
 		parent.canvas.ZoomToBB()
 	
-tools = [NewTool, SaveTool, OpenTool, SetTool, AddText, ZoomIn, ZoomOut, FullExtent]
+tools = [NewTool, SaveTool, OpenTool, SetTool, AddText, AddBar, ZoomIn, ZoomOut, FullExtent]
