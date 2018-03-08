@@ -7,6 +7,7 @@ class MainFrame(wx.Frame):
 
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self, None, title='Barcode Editor', **kwargs)
+        self.SetIcon(wx.Icon('../imgdata/barcode.ico', wx.BITMAP_TYPE_ICO))
         self.CreateStatusBar()
         self.toolbar = wx.ToolBar( self, wx.ID_ANY) 
         self.doc = None
